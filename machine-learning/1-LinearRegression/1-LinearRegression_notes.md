@@ -1,4 +1,4 @@
-# 线性回归备课稿
+# 线性回归
 
 ## 参数更新公式推导
 
@@ -38,7 +38,7 @@ $$
 \begin{aligned}
 & l(\theta)=\log L(\theta) \\
 = & \log \prod_{i=1}^n \frac{1}{2\pi^{1 / 2} \sigma} e^{-\frac{\left(y(i)-\theta^{\top} x^{(i)}\right)^2}{2 \sigma^2}} \\
-= & n \log \frac{1}{2\pi^{1 / 2} \sigma}+\log e^{-\frac{\left(y y^{(i)}-\theta^{\top} x^{(i)}\right)^2}{2 \sigma^2}} \\
+= & n \log \frac{1}{2\pi^{1 / 2} \sigma}+\log e^{-\frac{\left(y^{(i)}-\theta^{\top} x^{(i)}\right)^2}{2 \sigma^2}} \\
 = & n \log \frac{1}{\sqrt{2 \pi} \sigma}-\frac{1}{\sigma^2} \cdot \frac{1}{2} \sum_{i=1}^n\left(y^{(i)}-\theta^{\top} x^{(i)}\right)^2
 \end{aligned}
 $$

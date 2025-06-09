@@ -1,4 +1,4 @@
-# 逻辑回归备课稿
+# 逻辑回归
 
 Notice that g(z) tends towards 1 as z → ∞, and g(z) tends towards 0 as
 z → −∞. Moreover, g(z), and hence also h(x), is always bounded between
