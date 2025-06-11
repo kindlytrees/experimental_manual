@@ -45,7 +45,7 @@ $$
 
 $$
 \begin{aligned}
-& \nabla_{\theta(k)} \log \frac{\exp \left(\theta^{\left(y^{(i)}\right)^{\top}} x^{(i)}\right)}{\sum_{j=1}^k \exp \left(\theta^{(j 3 T} x^{(i)}\right)}\left(y^{(i)} \neq k\right) \\
+& \nabla_{\theta(k)} \log \frac{\exp \left(\theta^{\left(y^{(i)}\right)^{\top}} x^{(i)}\right)}{\sum_{j=1}^k \exp \left(\theta^{(j) T} x^{(i)}\right)}\left(y^{(i)} \neq k\right) \\
 & =-\frac{\theta^{(k)^{\top} x(i)}}{\sum_{j=1}^k \exp \left(\theta^{(j)^{\top} x(i)}\right)} \cdot x_i \\
 & =-x_i \cdot P\left(y^{(i)}=k \mid x^{(i)} ; \theta\right)
 \end{aligned}
