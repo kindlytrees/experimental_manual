@@ -83,7 +83,7 @@ $$
 \end{array} \\
 & =e^{-r \sum_{i}^{d}\left(x_i^2 + z_i^2 \right) } \sum_{i}^{d}\left(1+\sqrt \frac{{2 r}}{1!} x_i \cdot \sqrt\frac{{2 r}}{1!} z_i+ \sqrt\frac{{(2 r)}^2 }{2 !} x_i^2 \cdot \sqrt\frac{{(2 r)}^2 }{2 !} z_i^2+\cdots\right) \\
 & \phi\left(x_i\right)=e^{-r x_i^2}\left[1, \sqrt\frac{{2} r}{{1!}} x_i, \sqrt\frac{{(2 r)}^2}{{2!}} x_i^2, \sqrt\frac{(2 r)^3}{{3!}} x_i^3, \cdots\right] (i=1,2,...d) \\
-& \phi\left(x\right) = \begin{bmatrix} \phi\left(x_1\right) & \phi\left(x_2)\right) & \phi\left(x_3\right) & \cdots & \phi\left(x_d\right) \end{bmatrix}
+& \phi\left(x\right) = \begin{bmatrix} \phi\left(x_1\right) & \phi\left(x_2\right) & \phi\left(x_3\right) & \cdots & \phi\left(x_d\right) \end{bmatrix}
 \end{aligned}
 $$
 
