@@ -18,13 +18,11 @@ $g'(z)=\frac{d}{dz}(\frac{1}{1+e^{-z}})= \frac{1}{(1+e^{-z})^2}e^{-z}= \frac{1}{
 Assuming that the n training examples were generated independently, we
 can then write down the likelihood of the parameters as
 
-
 $p(y=1|x;\theta)=h_\theta(x)$
 
 $p(y=0|x;\theta)=1-h_\theta(x)$
 
 $p(y|x;\theta)=h_\theta(x)^y(1-h_\theta(x))^{(1-y)}$
-
 
 $p(\vec y|X;\theta )=\prod p(y|x;\theta)=\prod h_\theta(x)^y(1-h_\theta(x))^{(1-y)}$
 
