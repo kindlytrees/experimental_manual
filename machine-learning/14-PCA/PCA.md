@@ -1,3 +1,7 @@
+# PCA
+
+## SVD
+
 $$
 \begin{aligned}
 & \left\|A v_i\right\|^2=\left(A v_i\right)^T *\left(A v_i\right) \\

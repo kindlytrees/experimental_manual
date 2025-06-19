@@ -45,7 +45,7 @@ $$
 J(W, b ; x, y)=\frac{1}{2}\left\|h_{W, b}(x)-y\right\|^2
 $$
 
-- 所有样本及
+- 所有样本损失函数定义及权重衰减正则化
 
 $$
 \begin{aligned}
