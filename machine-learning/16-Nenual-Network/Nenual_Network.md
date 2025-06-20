@@ -53,3 +53,24 @@ J(W, b) & =\left[\frac{1}{m} \sum_{i=1}^m J\left(W, b ; x^{(i)}, y^{(i)}\right)\
 & =\left[\frac{1}{m} \sum_{i=1}^m\left(\frac{1}{2}\left\|h_{W, b}\left(x^{(i)}\right)-y^{(i)}\right\|^2\right)\right]+\frac{\lambda}{2} \sum_{l=1}^{n_l-1} \sum_{i=1}^{s_l} \sum_{j=1}^{s_{l+1}}\left(W_{j i}^{(l)}\right)^2
 \end{aligned}
 $$
+
+$$
+\begin{aligned}
+\delta_i^{(l)}=\left(\sum_{j=1}^{s_{l+1}} W_{j i}^{(l)} \delta_j^{(l+1)}\right) f^{\prime}\left(z_i^{(l)}\right) \\
+\delta^{(l)}=\left(\left(W^{(l)}\right)^T \delta^{(l+1)}\right) \bullet f^{\prime}\left(z^{(l)}\right) \\
+\frac{\partial}{\partial W_{i j}^{(l)}} J(W, b ; x, y) & =a_j^{(l)} \delta_i^{(l+1)} \\
+\frac{\partial}{\partial b_i^{(l)}} J(W, b ; x, y) & =\delta_i^{(l+1)}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\nabla_{W^{(l)}} J(W, b ; x, y) & =\delta^{(l+1)}\left(a^{(l)}\right)^T \\
+\nabla_{b^{(l)}} J(W, b ; x, y) & =\delta^{(l+1)} .
+\end{aligned}
+$$
+
+## 参考资源
+
+- [神经网络可视化](http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/)
+- [函数拟合的视角理解神经网络](http://staff.ustc.edu.cn/~lgliu/Resources/DL/What_is_DeepLearning.html)

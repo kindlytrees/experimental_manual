@@ -2,6 +2,8 @@
 
 ## SVD
 
+SVD中的v向量是A^TA的特征向量的时候，其V的正交向量基通过A变换即可变换为另一个不同长度维度的正交向量基U
+
 $$
 \begin{aligned}
 & \left\|A v_i\right\|^2=\left(A v_i\right)^T *\left(A v_i\right) \\
@@ -10,3 +12,4 @@ $$
 & \therefore\left\|A v_i\right\|=\sqrt{\lambda_i}
 \end{aligned}
 $$
+
