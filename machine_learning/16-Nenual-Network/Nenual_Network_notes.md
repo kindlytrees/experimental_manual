@@ -70,6 +70,37 @@ $$
 \end{aligned}
 $$
 
+- 反向传播链式法则的公式说明
+
+$$
+\begin{gathered}
+\delta_i^{(2)}=\frac{\partial J}{\partial z_i^{(2)}}=\frac{\partial J}{\partial a_i^{(2)}} \cdot \frac{\partial a_i^{(2)}}{\partial z_i^{(2)}}=\left(\frac{\partial J}{\partial z_1^{(3)}} \cdot \frac{\partial z_1^{(3)}}{\partial a_i^{(2)}}+\frac{\partial J}{\partial z_2^{(3)}}+\frac{\partial z_2^{(3)}}{\partial a_i^{(2)}}+\cdots+\frac{\partial J}{\partial z_k^{(3)}} \cdot \frac{\partial z_k^{(3)}}{\partial a_i^{(2)}}\right) \frac{\partial a_i^{(2)}}{\partial z_i^{(2)}} \\
+\delta_i^{(2)}=\sum_k\left[\delta_k^{(3)} \cdot w_{k i}^{(2)}\right] \cdot f^{\prime}\left(\delta_i^{(2)}\right)=\left[w_{\cdots i}^{(2)} \cdot \delta^{(3)}\right] f^{\prime}\left(\delta_i^{(2)}\right) \\
+\delta^{(2)}=\left[w^{(2) T} \cdot \delta^{(3)}\right] \cdot f^{\prime}\left(\delta^{(2)}\right) \quad \delta^{(1)}=\left[w^{(l) T} \cdot f^{(l+1)}\right] \cdot f^{\prime}\left(\delta^{(l)}\right)
+\end{gathered}
+$$
+
+## 实验说明
+
+实验代码中的dz4值得推导过程
+
+$$
+\begin{aligned}
+& p(x, \hat{y})={\hat{y}}^{y}(1-\hat y)^{(1-y)} \\
+& \log p(x, \hat{y})  =y \log \hat{y}+(1-y) \log (1-\hat{y}) \\
+& J = (y \log \hat{y}+(1-y) \log (1-\hat{y})) \\
+& = \frac{\partial J}{\partial z_{4}} =\frac{\partial J}{\partial a_4} \cdot \frac{\partial a_4}{\partial z_4} \\
+& =-\left[y \frac{1}{\hat y}+(1-y) \frac{1}{(1-\hat{y})} \times(-1)\right] (\hat{y})(1-\hat{y}) \\
+& =\left(-y \frac{1}{\hat{y}}+(1-y) \frac{1}{(1-\hat{y})}\right)(\hat{y})(1-\hat{y}) \\
+& =-y(1-\hat{y})+(1-y) \hat{y} \\
+& =-y+y \hat{y}+\hat{y}-y \hat{y} \\
+& =\hat{y}-y
+\end{aligned}
+$$
+
+
+
+
 ## 参考资源
 
 - [神经网络可视化](http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/)
