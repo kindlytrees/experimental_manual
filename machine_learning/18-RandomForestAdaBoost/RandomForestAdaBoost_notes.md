@@ -18,6 +18,7 @@ $$
 $$
 
 - 分类器权重，于错误率有关，错误率越小，模型性能表现更好，权重就越高
+  
 $$
 \alpha_t=\frac{1}{2} \ln \left(\frac{1-\epsilon_t}{\epsilon_t}\right)
 $$
@@ -52,7 +53,7 @@ $$
 \end{aligned}
 $$
 
-其中$\varpi_{m i}=\exp \left(-y_i f_{m-1}\left(x_i\right)\right)$
+其中 $\varpi_{m i}=\exp \left(-y_i f_{m-1}\left(x_i\right)\right)$
 
 $$
 \begin{aligned}
@@ -63,6 +64,7 @@ $$
 $$
 
 - 损失函数最小化参数求解过程推导
+  
 $$
 \begin{aligned}
 & -e^{-\alpha} \sum_{i=1}^N \varpi_{m i}+\left(e^\alpha+e^{-\alpha}\right) \sum_{i=1}^N \varpi_{m i} I\left(y_i \neq G_m\left(x_i\right)\right)=0 \\
