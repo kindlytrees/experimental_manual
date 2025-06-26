@@ -1,6 +1,15 @@
 # MDP
 
+## 马尔可夫奖励过程
 
+$$
+\begin{aligned}
+V^t(s) & =\mathbb{E}_\pi\left[G_t \mid s_t=s\right] \\
+& =\mathbb{E}_\pi\left[r_{t+1}+\gamma r_{t+2}+\gamma^2 r_{t+3}+\ldots+\gamma^{T-t-1} r_T \mid s_t=s\right]
+\end{aligned}
+$$
+
+## 马尔可夫决策过程
 
 $$
 \begin{aligned}
