@@ -2,10 +2,23 @@
 
 ## 马尔可夫奖励过程
 
+- 回报函数的定义
 $$
 \begin{aligned}
 V^t(s) & =\mathbb{E}_\pi\left[G_t \mid s_t=s\right] \\
 & =\mathbb{E}_\pi\left[r_{t+1}+\gamma r_{t+2}+\gamma^2 r_{t+3}+\ldots+\gamma^{T-t-1} r_T \mid s_t=s\right]
+\end{aligned}
+$$
+
+- 蒙特卡洛法估计价值函数
+$$
+\begin{aligned}
+& i \leftarrow 0, G_t \leftarrow 0 \\
+& 当 i \neq N 时，执行： \\
+& \quad 生成一个回合的轨迹，从状态 s 和时刻 t 开始使用生成的轨迹计算回报 g=\sum_{i=t}^{H-1} \gamma^{i-t} r_{i+1} \\
+& \quad G_t \leftarrow G_t+g, i \leftarrow i+1 \\
+& 结束循环 \\
+& V(s) \leftarrow G_t / N \\
 \end{aligned}
 $$
 

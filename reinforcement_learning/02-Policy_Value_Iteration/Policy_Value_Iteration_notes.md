@@ -31,4 +31,5 @@ for res in self.env.P[s][a]: # 长度为1
     qsa += p * (r + self.gamma * self.v[next_state] * (1 - done))
 ```
 
-- 然后根据
+策略迭代中价值函数的迭代为`new_v[s] = sum(qsa_list)  # 状态价值函数和动作价值函数之间的关系`
+价值迭代中`new_v[s] = max(qsa_list)`
