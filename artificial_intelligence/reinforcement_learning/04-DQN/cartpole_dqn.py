@@ -1,5 +1,5 @@
 import random
-import gym
+import gymnasium as gym
 import numpy as np
 import collections
 from tqdm import tqdm
@@ -57,6 +57,7 @@ class DQN:
         self.device = device
 
     def take_action(self, state):  # epsilon-贪婪策略采取动作
+        
         if np.random.random() < self.epsilon:
             action = np.random.randint(self.action_dim)
         else:
@@ -87,6 +88,7 @@ class DQN:
         dqn_loss.backward()  # 反向传播更新参数
         self.optimizer.step()
 
+                # --- Epsilon 衰减 ---
         if self.count % self.target_update == 0:
             self.target_q_net.load_state_dict(
                 self.q_net.state_dict())  # 更新目标网络
@@ -96,7 +98,9 @@ lr = 2e-3
 num_episodes = 500
 hidden_dim = 128
 gamma = 0.98
-epsilon = 0.01
+epsilon = 0.5
+epsilon_end=0.01
+epsilon_decay_rate=0.999 # 使用稍慢的衰减率
 target_update = 10
 buffer_size = 10000
 minimal_size = 500
@@ -119,8 +123,8 @@ agent = DQN(state_dim, hidden_dim, action_dim, lr, gamma, epsilon,
 
 return_list = []
 for i in range(10):
-    with tqdm(total=int(num_episodes / 10), desc='Iteration %d' % i) as pbar:
-        for i_episode in range(int(num_episodes / 10)):
+    with tqdm(total=int(num_episodes / 10), desc=f'Iteration: {i} epsilon: {epsilon:.2f}' ) as pbar:
+        for i_episode in range(int(num_episodes / 10)): # 50个epoch，10此循环 500轮次
             episode_return = 0
             state, _ = env.reset()
             done = False
@@ -142,6 +146,9 @@ for i in range(10):
                     }
                     agent.update(transition_dict)
             return_list.append(episode_return)
+            if epsilon > epsilon_end:
+                epsilon *= epsilon_decay_rate
+                agent.epsilon = epsilon
             if (i_episode + 1) % 10 == 0:
                 pbar.set_postfix({
                     'episode':

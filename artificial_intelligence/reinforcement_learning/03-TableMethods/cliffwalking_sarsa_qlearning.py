@@ -194,7 +194,6 @@ if __name__ == "__main__":
 
     plot_policy(sarsa_q_table, "SARSA")
     plot_policy(qlearning_q_table, "Q-Learning")
-
     # print(sarsa_q_table)
     # print(qlearning_q_table)
 

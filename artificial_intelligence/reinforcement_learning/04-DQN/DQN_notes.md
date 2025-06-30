@@ -15,5 +15,21 @@
 ## DQN的实现
 - 问题1：一般参数更新多少次，会将最新的q网络的参数同步到目标网络
 
-- 两个Q网络，1：参数更新的Q网络；2：目标网络，用于生成训练目标，用于训练真值的生成
- 
+- 两个Q网络，1：参数更新的Q网络；2：目标网络，用于生成训练目标，用于训练真值的生成,算法伪代码如下：
+
+$$
+\begin{aligned}
+&\text { 用随机的网络参数 } \omega \text { 初始化网络 } Q_\omega(s, a)， { 复制相同的参数 } \omega^{-} \leftarrow \omega \text { 来初始化目标网络 } Q_{\omega^{\prime}},{ 初始化经验回放池 } R \\
+&\text { for 序列 } e=1 \rightarrow E \text { do }\\
+&\quad \text { 获取环境初始状态 } s_1\\
+&\quad \text { for 时间步 } t=1 \rightarrow T \text { do }\\
+&\quad \quad \text { 根据当前网络 } Q_\omega(s, a) \text { 以 } \epsilon \text {-贪婪策略选择动作 } a_t\\
+&\quad \quad \text { 执行动作 } a_t \text {, 获得回报 } r_t \text {, 环境状态变为 } s_{t+1}, { 将 }\left(s_i, a_i, r_t, s_{t+1}\right) \text { 存储进回放池 } R \text { 中 }\\
+&\quad \quad \text { 若 } R \text { 中数据足够, 从 } R \text { 中采样 } N \text { 个数据 }\left\{\left(s_i, a_i, r_i, s_{i+1}\right)\right\}_{i=1, \ldots, N}\\
+&\quad \quad \text { 对每个数据, 用目标网络计算 } y_i=r_i+\gamma \max _a Q_{\omega^{-}}\left(s_{i+1}, a\right)\\
+&\quad \quad \text { 最小化目标损失 } L=\frac{1}{N} \sum_i\left(y_i-Q_\omega\left(s_i, a_i\right)\right)^2 \text {, 以此更新当前网络 } Q_\omega\\
+&\quad \quad \text { 当前策略网络训练参数向前迭代更新到了一定的步骤后将当前策略网络的参数更新到目标网络 }\\
+&\quad \text { end for }\\
+&\text { end for }
+\end{aligned}
+$$
