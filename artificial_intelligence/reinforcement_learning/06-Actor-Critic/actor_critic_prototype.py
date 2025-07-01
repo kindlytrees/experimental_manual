@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -84,12 +84,11 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 
 save_dir = './outputs'
 os.makedirs(save_dir, exist_ok=True)
-weights_path = os.path.join(save_dir, 'agent.pth')
+weights_path = os.path.join(save_dir, 'cartpole_actor_critic.pth')
 
 env_name = 'CartPole-v1'
 env = gym.make(env_name, render_mode='human')
 env.reset(seed=0)
-#env.seed(0)
 torch.manual_seed(0)
 state_dim = env.observation_space.shape[0]
 action_dim = env.action_space.n

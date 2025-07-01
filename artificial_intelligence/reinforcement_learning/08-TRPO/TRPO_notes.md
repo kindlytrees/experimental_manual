@@ -3,28 +3,28 @@
 - 目标损失函数
 
 $$
-\operatorname{maximize} \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[\frac{\pi_\theta(a \mid s)}{\pi_{\theta_{\text {old }}}(a \mid s)} A_{\theta_{\text {old }}}(s, a)\right] \approx g^T\left(\theta^{\prime}-\theta_k\right)
+\operatorname{maximize} \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[\frac{\pi_\theta(a \mid s)}{\pi_{\theta_{\text {old }}}(a \mid s)} A_{\theta_{\text {old }}}(s, a)\right] \approx g^T\left(\theta-\theta_{old}\right)
 $$
 
 - 约束函数
 
 $$
-\text { subject to } \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\text {old }}} \| \pi_\theta\right)\right] \leq \delta \approx \frac{1}{2}\left(\theta^{\prime}-\theta_k\right)^T H\left(\theta^{\prime}-\theta_k\right)
+\text { subject to } \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\text {old }}} \| \pi_\theta\right)\right] \leq \delta \approx \frac{1}{2}\left(\theta-\theta_{old}\right)^T H\left(\theta-\theta_{old}\right)
 $$
 
 - 约束优化函数定义为
 
 $$
 \begin{aligned}
-\operatorname{maximize} \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[\frac{\pi_\theta(a \mid s)}{\pi_{\theta_{\text {old }}}(a \mid s)} A_{\theta_{\text {old }}}(s, a)\right] \approx g^T\left(\theta^{\prime}-\theta_k\right) \\
-\text { subject to } \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\text {old }}} \| \pi_\theta\right)\right] \leq \delta \approx \frac{1}{2}\left(\theta^{\prime}-\theta_k\right)^T H\left(\theta^{\prime}-\theta_k\right) \\
+\operatorname{maximize} \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[\frac{\pi_\theta(a \mid s)}{\pi_{\theta_{\text {old }}}(a \mid s)} A_{\theta_{\text {old }}}(s, a)\right] \approx g^T\left(\theta-\theta_{old}\right) \\
+\text { subject to } \mathbb{E}_{\pi_{\theta_{\text {old }}}}\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\text {old }}} \| \pi_\theta\right)\right] \leq \delta \approx \frac{1}{2}\left(\theta-\theta_{old}\right)^T H\left(\theta-\theta_{old}\right) \\
 \end{aligned}
 $$
 
 - 约束优化函数定义简化表示为
 
 $$
-\theta_{k+1}=\underset{\theta^{\prime}}{\arg \max } g^T\left(\theta^{\prime}-\theta_k\right) \quad \text { s.t. } \quad \frac{1}{2}\left(\theta^{\prime}-\theta_k\right)^T H\left(\theta^{\prime}-\theta_k\right) \leq \delta
+\theta=\underset{\theta^{\prime}}{\arg \max } g^T\left(\theta-\theta_{old}\right) \quad \text { s.t. } \quad \frac{1}{2}\left(\theta-\theta_{old}\right)^T H\left(\theta-\theta_{old}\right) \leq \delta
 $$
 
 - 目标函数的常数项部分为0的说明
@@ -174,7 +174,7 @@ $$
 $$
 最后，更新策略参数：
 $$
-\theta_{k+1} = \theta_k + \Delta\theta = \theta_k + \sqrt{\frac{2\delta}{g^T H^{-1} g}} H^{-1} g
+\theta=\theta_{old}+\Delta \theta=\theta_{old}+\sqrt{\frac{2 \delta}{g^T H^{-1} g}} H^{-1} g
 $$
 这就完成了整个推导。
 
@@ -285,3 +285,28 @@ TRPO通过共轭梯度法（CG）巧妙地解决了自然梯度更新中的巨�
 *   **高效近似**：CG是一个迭代算法，仅需少量迭代就能得到足够精确的搜索方向 $s=H^{-1}g$，使得整个更新步骤在计算上变得可行。
 
 具体的求解过程python的代码和注释说明
+
+共轭法求解过程：
+
+$$
+\begin{aligned}
+& 1．初始化： \\
+& - 解 x 初始化为零向量： \mathrm{x}=0 \\
+& - 残差 r 初始化为梯度：r= g-Hx=g  \\
+& - 搜索方向 p 初始化为残差：p=r  \\
+& - 计算残差的模的平方：r \operatorname{dot} r=r \cdot \operatorname{dot}(r) \\
+
+& 2．选代循环： \\
+& - 计算矩阵－向量内积：调用 z=compute＿hvp（ p）。为了增加数值稳定性，\\
+& - 实际计算的是（ H+\lambda I ）p=H p+\lambda p ，所以 z=compute＿hvp（ p ）+ \lambda*p  \\
+& - 计算步长 \boldsymbol{\alpha} ：\alpha＝rdotr／p \cdot \operatorname{dot}(z)  \\
+& - 更新解：x += \alpha*p  \\
+& - 更新残差r－＝\alpha*z  \\
+& - 检查收敛：如果 r 的模已经非常小，可以提前终止。 \\
+& - 更新搜素方向： \\
+& \quad 计算新的残差模的平方：new＿rdotr＝r．dot(r)  \\
+& \quad 计算 beta：beta＝new＿rdotr / rdotr \\
+& \quad 更新搜索方向 \mathrm{p}: \mathrm{p}=\mathrm{r}+ beta { }^* \mathrm{p} \\
+& \quad 更新 rdotr：rdotr＝new＿rdotr  \\
+\end{aligned}
+$$

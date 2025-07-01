@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -77,7 +77,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device(
 
 save_dir = './outputs'
 os.makedirs(save_dir, exist_ok=True)
-weights_path = os.path.join(save_dir, 'agent.pth')
+weights_path = os.path.join(save_dir, 'cartpole_pg.pth')
 
 env_name = "CartPole-v1"
 env = gym.make(env_name, render_mode="human")
@@ -132,17 +132,3 @@ while not done:
     next_state, reward, done, _, _ = env.step(action)
     state = next_state
     env.render()
-
-# episodes_list = list(range(len(return_list)))
-# plt.plot(episodes_list, return_list)
-# plt.xlabel('Episodes')
-# plt.ylabel('Returns')
-# plt.title('REINFORCE on {}'.format(env_name))
-# plt.show()
-
-# mv_return = rl_utils.moving_average(return_list, 9)
-# plt.plot(episodes_list, mv_return)
-# plt.xlabel('Episodes')
-# plt.ylabel('Returns')
-# plt.title('REINFORCE on {}'.format(env_name))
-# plt.show()
