@@ -4,7 +4,6 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
-
 class PolicyNet(torch.nn.Module):
     def __init__(self, state_dim, hidden_dim, action_dim, device):
         super(PolicyNet, self).__init__()
@@ -25,7 +24,7 @@ class PolicyNet(torch.nn.Module):
 
 save_dir = './outputs'
 os.makedirs(save_dir, exist_ok=True)
-weights_path = os.path.join(save_dir, 'agent.pth')
+weights_path = os.path.join(save_dir, 'actor.pth')
 
 env_name = "CartPole-v1"
 env = gym.make(env_name, render_mode="human")

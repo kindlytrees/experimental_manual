@@ -7,6 +7,5 @@
 - [实验手册](./machine-learning/)
 
 ### 强化学习
-- [课程视频](https://space.bilibili.com/505620745/lists/5592212)
+- [课程视频](https://space.bilibili.com/505620745/lists/5730406)
 - [实验手册](./reinforcement_learning/)
-

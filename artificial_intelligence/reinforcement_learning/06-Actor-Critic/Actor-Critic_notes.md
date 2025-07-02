@@ -10,7 +10,7 @@ $$
 & \sum_{t^{\prime}=t}^T \gamma^{t^{\prime}-t} r_{t^{\prime}} //动作 a_t 之后能回报；\\
 & \sum_{t^{\prime}=t}^T \gamma^{t^{\prime}-t} r_{t^{\prime}}-b\left(s_t\right) //基准线版本的改进；\\
 & Q^{\pi_\theta}\left(s_t, a_t\right) ：动作价值函数 \\
-& A^{\pi_\theta}\left(s_t, a_t\right) ：仇势函数 \\
+& A^{\pi_\theta}\left(s_t, a_t\right) ：优势函数 \\
 & r_{t}+\gamma V^{\pi_\theta}\left(s_{{t}+1}\right)-V^{\pi_\theta}\left(s_{t}\right)  //时序差分残差  \\
 \end{aligned}
 $$

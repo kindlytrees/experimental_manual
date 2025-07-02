@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -91,7 +91,7 @@ class PPO:
 
 actor_lr = 1e-3
 critic_lr = 1e-2
-num_episodes = 500
+num_episodes = 200
 hidden_dim = 128
 gamma = 0.98
 lmbda = 0.95

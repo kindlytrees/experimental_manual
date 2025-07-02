@@ -38,7 +38,6 @@ class ValueNet(torch.nn.Module):
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
-
 class TRPO:
     """ TRPO算法 """
     def __init__(self, hidden_dim, state_space, action_space, lmbda,
@@ -183,7 +182,7 @@ class TRPO:
         self.policy_learn(states, actions, old_action_dists, old_log_probs,
                           advantage)
         
-num_episodes = 500
+num_episodes = 200
 hidden_dim = 128
 gamma = 0.98
 lmbda = 0.95
