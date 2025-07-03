@@ -296,7 +296,7 @@ $$
 & - 搜索方向 p 初始化为残差：p=r  \\
 & - 计算残差的模的平方：r \operatorname{dot} r=r \cdot \operatorname{dot}(r) \\
 
-& 2．选代循环： \\
+& 2．迭代循环： \\
 & - 计算矩阵－向量内积：调用 z=compute＿hvp（ p）。为了增加数值稳定性，\\
 & - 实际计算的是（ H+\lambda I ）p=H p+\lambda p ，所以 z=compute＿hvp（ p ）+ \lambda*p  \\
 & - 计算步长 \boldsymbol{\alpha} ：\alpha＝rdotr／p \cdot \operatorname{dot}(z)  \\

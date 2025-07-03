@@ -1,5 +1,5 @@
 import os
-import gym
+import gymnasium as gym
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -10,6 +10,7 @@ class PolicyNet(torch.nn.Module):
         self.fc1 = torch.nn.Linear(state_dim, hidden_dim)
         self.fc2 = torch.nn.Linear(hidden_dim, action_dim)
         self.device = device
+        self.to(device)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -20,7 +21,7 @@ class PolicyNet(torch.nn.Module):
         x = F.relu(self.fc1(state))
         probs =  F.softmax(self.fc2(x), dim=1)
         action = torch.argmax(probs, dim=-1)
-        return action.numpy()[0]
+        return action.cpu().numpy()[0]
 
 save_dir = './outputs'
 os.makedirs(save_dir, exist_ok=True)

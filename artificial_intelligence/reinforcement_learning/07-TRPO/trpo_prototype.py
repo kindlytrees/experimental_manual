@@ -1,11 +1,31 @@
 import torch
-import numpy as np
-import gym
+import gymnasium as gym
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 import rl_utils
 import copy
 import os
+import collections
+import random
+import numpy as np
+
+class ReplayBuffer:
+    ''' 经验回放池 '''
+    def __init__(self, capacity):
+        self.buffer = collections.deque(maxlen=capacity)  # 双端队列,先进先出
+        # 队列的两端进行快速的元素添加和删除
+
+    def add(self, state, action, reward, next_state, done):  # 将数据加入buffer
+        self.buffer.append((state, action, reward, next_state, done))
+
+    def sample(self, batch_size):  # 从buffer中采样数据,数量为batch_size
+        transitions = random.sample(self.buffer, batch_size)
+        state, action, reward, next_state, done = zip(*transitions)
+        return np.array(state), action, reward, np.array(next_state), done
+
+    def size(self):  # 目前buffer中数据的数量
+        return len(self.buffer)
+
 
 def compute_advantage(gamma, lmbda, td_delta): #GAE
     td_delta = td_delta.detach().numpy()
@@ -26,7 +46,7 @@ class PolicyNet(torch.nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         return F.softmax(self.fc2(x), dim=1)
-
+        #self.log_softmax(self.fc2(x))
 
 class ValueNet(torch.nn.Module):
     def __init__(self, state_dim, hidden_dim):
@@ -54,6 +74,7 @@ class TRPO:
         self.kl_constraint = kl_constraint  # KL距离最大限制
         self.alpha = alpha  # 线性搜索参数
         self.device = device
+        self.epochs = 5
 
     def take_action(self, state):
         state = torch.tensor([state], dtype=torch.float).to(self.device)
@@ -97,7 +118,7 @@ class TRPO:
             new_rdotr = torch.dot(r, r)
             if new_rdotr < 1e-10:
                 break
-            beta = new_rdotr / rdotr
+            beta = new_rdotr / (rdotr+ 1e-8)
             p = r + beta * p
             rdotr = new_rdotr
         return x
@@ -120,15 +141,31 @@ class TRPO:
             new_actor = copy.deepcopy(self.actor)
             torch.nn.utils.convert_parameters.vector_to_parameters(
                 new_para, new_actor.parameters())
-            new_action_dists = torch.distributions.Categorical(
-                new_actor(states))
-            kl_div = torch.mean(
-                torch.distributions.kl.kl_divergence(old_action_dists,
-                                                     new_action_dists))
-            new_obj = self.compute_surrogate_obj(states, actions, advantage,
-                                                 old_log_probs, new_actor)
-            if new_obj > old_obj and kl_div < self.kl_constraint:
-                return new_para
+            
+            try:
+                # --- 这是最可能出错的地方 ---
+                # 1. new_actor(states) 可能输出 NaN/inf
+                new_probs = new_actor(states)
+                
+                # 检查输出的概率中是否包含非法值
+                if torch.isnan(new_probs).any() or torch.isinf(new_probs).any():
+                    # 如果有非法值，手动抛出一个运行时错误，被下面的except捕获
+                    raise RuntimeError("Generated probabilities contain NaN/Inf")
+                new_action_dists = torch.distributions.Categorical(
+                    new_actor(states))
+                kl_div = torch.mean(
+                    torch.distributions.kl.kl_divergence(old_action_dists,
+                                                        new_action_dists))
+                new_obj = self.compute_surrogate_obj(states, actions, advantage,
+                                                    old_log_probs, new_actor)
+                if new_obj > old_obj and kl_div < self.kl_constraint:
+                    return new_para
+            except RuntimeError as e:
+                # 捕获到我们自己抛出的错误，或者PyTorch内部的运行时错误
+                # (例如，Categorical的输入概率和不为1或包含负数)
+                # 打印一个警告信息（可选），然后继续下一次循环（使用更小的coef）
+                # print(f"Line search step {i} with coef={coef:.4f} failed: {e}. Trying smaller step.")
+                pass # 静默处理，直接进入下一次循环    
         return old_para
 
     def policy_learn(self, states, actions, old_action_dists, old_log_probs,
@@ -138,12 +175,10 @@ class TRPO:
         grads = torch.autograd.grad(surrogate_obj, self.actor.parameters())
         obj_grad = torch.cat([grad.view(-1) for grad in grads]).detach()
         # 用共轭梯度法计算x = H^(-1)g
-        descent_direction = self.conjugate_gradient(obj_grad, states,
-                                                    old_action_dists)
+        descent_direction = self.conjugate_gradient(obj_grad, states, old_action_dists)
 
         Hd = self.hessian_matrix_vector_product(states, old_action_dists,
                                                 descent_direction)
-        
         #PPT中的theta更新公式
         max_coef = torch.sqrt(2 * self.kl_constraint /
                               (torch.dot(descent_direction, Hd) + 1e-8))
@@ -168,26 +203,29 @@ class TRPO:
                                                                        dones)
         td_delta = td_target - self.critic(states)
         advantage = compute_advantage(self.gamma, self.lmbda,
-                                      td_delta.cpu()).to(self.device)
+                                      td_delta.detach()).to(self.device)
+        advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-8)
         old_log_probs = torch.log(self.actor(states).gather(1,
                                                             actions)).detach()
-        old_action_dists = torch.distributions.Categorical(
-            self.actor(states).detach())
-        critic_loss = torch.mean(
-            F.mse_loss(self.critic(states), td_target.detach()))
-        self.critic_optimizer.zero_grad()
-        critic_loss.backward()
-        self.critic_optimizer.step()  # 更新价值函数
-        # 更新策略函数
-        self.policy_learn(states, actions, old_action_dists, old_log_probs,
-                          advantage)
+        old_action_dists = torch.distributions.Categorical(self.actor(states).detach())
         
-num_episodes = 200
+        #print(f'old_action_dists {old_action_dists}')
+        for _ in range(self.epochs): #每个episode的数据训练10次策略网络，数据达到了10次复用
+            critic_loss = torch.mean(
+                F.mse_loss(self.critic(states), td_target.detach()))
+            self.critic_optimizer.zero_grad()
+            critic_loss.backward()
+            self.critic_optimizer.step()  # 更新价值函数
+            # 更新策略函数
+            # print(f'old_action_dists in epoches {old_action_dists}')
+            self.policy_learn(states, actions, old_action_dists, old_log_probs, advantage)
+
+num_episodes = 1000
 hidden_dim = 128
 gamma = 0.98
 lmbda = 0.95
 critic_lr = 1e-2
-kl_constraint = 0.005
+kl_constraint = 0.0005
 alpha = 0.5
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device(
     "cpu")
@@ -204,8 +242,6 @@ torch.manual_seed(0)
 agent = TRPO(hidden_dim, env.observation_space, env.action_space, lmbda,
              kl_constraint, alpha, critic_lr, gamma, device)
 return_list = rl_utils.train_on_policy_agent(env, agent, num_episodes)
-
-#agent.save(save_dir)
 
 episodes_list = list(range(len(return_list)))
 plt.plot(episodes_list, return_list)

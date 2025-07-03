@@ -27,32 +27,37 @@ def moving_average(a, window_size):
     end = (np.cumsum(a[:-window_size:-1])[::2] / r)[::-1]
     return np.concatenate((begin, middle, end))
 
-def train_on_policy_agent(env, agent, num_episodes):
+def train_on_policy_agent(env, agent, num_iterations):
     return_list = []
     save_dir = './outputs'
-    for i in range(50): #num_episodes为500的时候
-        with tqdm(total=int(num_episodes/10), desc='Iteration %d' % i) as pbar:
-            for i_episode in range(int(num_episodes/10)):
-                episode_return = 0
-                transition_dict = {'states': [], 'actions': [], 'next_states': [], 'rewards': [], 'dones': []}
-                state, _ = env.reset()
-                done = False
-                while not done:
-                    action = agent.take_action(state)
-                    next_state, reward, done, _, _ = env.step(action)
-                    transition_dict['states'].append(state)
-                    transition_dict['actions'].append(action)
-                    transition_dict['next_states'].append(next_state)
-                    transition_dict['rewards'].append(reward)
-                    transition_dict['dones'].append(done)
-                    state = next_state
-                    episode_return += reward
-                return_list.append(episode_return)
-                agent.update(transition_dict)#每个episode的数据拿来训练
-                if (i_episode+1) % 10 == 0:
-                    pbar.set_postfix({'episode': '%d' % (num_episodes/10 * i + i_episode+1), 'return': '%.3f' % np.mean(return_list[-10:])})
-                    agent.save(save_dir)
-                pbar.update(1)
+    cur_iter = 1
+    
+    with tqdm(total=int(num_iterations), desc='Iteration %d' % cur_iter) as pbar:
+        while cur_iter <= num_iterations:
+            transition_dict = {'states': [], 'actions': [], 'next_states': [], 'rewards': [], 'dones': []}
+            episode_return = 0
+            state, _ = env.reset()
+            done = False
+            while not done:
+                action = agent.take_action(state)
+                next_state, reward, done, _, _ = env.step(action)
+                transition_dict['states'].append(state)
+                transition_dict['actions'].append(action)
+                transition_dict['next_states'].append(next_state)
+                transition_dict['rewards'].append(reward)
+                transition_dict['dones'].append(done)
+                state = next_state
+                episode_return += reward
+                # 检查是否收集到足够的样本以进行更新
+                #print(f"Collected {len(transition_dict['states'])} steps, updating...")
+            agent.update(transition_dict)
+            cur_iter += 1
+            if (cur_iter) % 10 == 0:
+                pbar.set_postfix({'iteration': '%d' % cur_iter, 'return': '%.3f' % np.mean(return_list[-10:])})
+                agent.save(save_dir)
+            pbar.update(1)
+            return_list.append(episode_return)
+        #agent.update(transition_dict)#每个episode的数据拿来训练
     return return_list
 
 def train_off_policy_agent(env, agent, num_episodes, replay_buffer, minimal_size, batch_size):
