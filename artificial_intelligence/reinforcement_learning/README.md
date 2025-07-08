@@ -22,4 +22,6 @@ pip install pygame
 pip install gymnasium
 pip install matplotlib
 pip install tqdm
+python -m pip install ipykernel
+pip install tiktoken
 ```
